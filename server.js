@@ -13,10 +13,13 @@
 const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
-const Database = require("better-sqlite3");
 
-const db = new Database(process.env.DB_FILE || "alumnus.db");
-db.pragma("journal_mode = WAL");
+/* Use Node's built-in SQLite (Node 22.5+) — no native compilation needed */
+const { DatabaseSync } = require("node:sqlite");
+const db = new DatabaseSync(process.env.DB_FILE || "alumnus.db");
+
+/* WAL mode via exec */
+db.exec("PRAGMA journal_mode = WAL;");
 
 const app = express();
 app.use(cors());
