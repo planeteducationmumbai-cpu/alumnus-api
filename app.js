@@ -6,7 +6,7 @@
    • Falls back to demo data when the API is unreachable, so the
      site still renders when you just want to preview it.
    ============================================================ */
-const API_BASE = ((typeof window !== "undefined" && window.ALUMNUS_API) || "http://localhost:4000") + "/api";
+const API_BASE = ((typeof window !== "undefined" && window.ALUMNUS_API) || "https://alumnus-api.onrender.com") + "/api";
 
 /* ---------------- state ---------------- */
 let TOKEN = (typeof localStorage !== "undefined" && localStorage.getItem("alumnus_token")) || null;

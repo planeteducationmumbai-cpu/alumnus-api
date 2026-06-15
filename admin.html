@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin · Alumnus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#11213F;--ink2:#1B2F52;--gold:#C79A3F;--paper:#F6F2E9;--card:#fff;--line:#ECE6D8;--muted:#6B7689;--red:#B0413E;--green:#2F7D5B;--purple:#6B3FA0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
+h1,h2,h3{font-family:'Fraunces',serif}
+input,select,textarea{font-family:inherit;font-size:14px;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;outline:none;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+textarea{resize:vertical;min-height:80px}
+label{font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.field{margin-bottom:14px}
+.btn{border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;padding:10px 18px;border-radius:999px;transition:filter .15s}
+.btn:hover{filter:brightness(1.06)}
+.btn-gold{background:var(--gold);color:#fff;box-shadow:0 4px 12px rgba(199,154,63,.3)}
+.btn-ink{background:var(--ink);color:#fff}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn-red{background:var(--red);color:#fff}
+.btn-green{background:var(--green);color:#fff}
+.btn-purple{background:var(--purple);color:#fff}
+.btn-sm{padding:6px 12px;font-size:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 4px 16px rgba(17,33,63,.05)}
+
+/* login */
+#login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--ink),var(--ink2));z-index:100}
+.login-box{background:#fff;border-radius:24px;padding:40px;width:380px;max-width:92vw}
+.login-box h1{font-size:26px;margin-bottom:4px}
+.login-box p{color:var(--muted);font-size:13px;margin-bottom:24px}
+#login-err{color:var(--red);font-size:12px;min-height:16px;margin:8px 0}
+
+/* layout */
+header{background:var(--ink);color:#fff;padding:0 28px;display:flex;align-items:center;gap:16px;height:60px}
+header h2{font-size:18px;flex:1}
+.role-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;letter-spacing:.5px}
+.role-master{background:var(--gold);color:#fff}
+.role-admin{background:var(--green);color:#fff}
+.layout{display:flex;min-height:calc(100vh - 60px)}
+aside{width:220px;background:var(--card);border-right:1px solid var(--line);padding:20px 12px;flex-shrink:0}
+.nav-section{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.8px;padding:10px 14px 4px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:11px;cursor:pointer;font-weight:600;font-size:14px;color:var(--muted);margin-bottom:2px;transition:background .15s}
+.nav-item:hover{background:var(--paper);color:var(--ink)}
+.nav-item.active{background:var(--ink);color:#fff}
+.nav-item .ic{font-size:17px;width:22px;text-align:center}
+.nav-item.master-only{position:relative}
+.nav-item.master-only .crown{position:absolute;right:10px;font-size:11px}
+main{flex:1;padding:28px;overflow-y:auto}
+.tab{display:none}.tab.show{display:block}
+.page-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.page-head h2{font-size:26px}
+
+/* stats row */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:28px}
+.stat-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center}
+.stat-card .num{font-family:'Fraunces',serif;font-size:32px;color:var(--ink)}
+.stat-card .lbl{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;padding:10px 14px;background:var(--paper);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border-bottom:1px solid var(--line)}
+.tbl td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(199,154,63,.03)}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700}
+.badge-gold{background:#FEF3D7;color:#A07010}
+.badge-green{background:#E0F5EC;color:var(--green)}
+.badge-purple{background:#EDE0F5;color:var(--purple)}
+.badge-muted{background:var(--paper);color:var(--muted)}
+.badge-red{background:#FAE0E0;color:var(--red)}
+
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(11,20,36,.5);backdrop-filter:blur(3px);z-index:50;display:none;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:20px;width:580px;max-width:94vw;max-height:90vh;overflow-y:auto;padding:28px}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-head h3{font-size:20px}
+.close-btn{border:none;background:none;font-size:22px;cursor:pointer;color:var(--muted)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+
+/* master-only lock overlay */
+.locked{opacity:.45;pointer-events:none;position:relative}
+.lock-msg{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:20px;font-size:14px;color:var(--muted);display:none}
+.lock-msg.show{display:block}
+
+/* toast */
+#toast{position:fixed;bottom:28px;right:28px;background:var(--ink);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:200;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none}
+#toast.show{opacity:1;transform:none}
+
+@media(max-width:700px){aside{display:none}.form-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-box">
+    <h1>Alumnus Admin</h1>
+    <p>Sign in with your admin or master admin account.</p>
+    <div class="field"><label>Email</label><input id="l-email" type="email" placeholder="your@email.com" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="field"><label>Password</label><input id="l-pass" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div id="login-err"></div>
+    <button class="btn btn-gold" style="width:100%;margin-top:4px" onclick="doLogin()">Sign in</button>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <header>
+    <div style="width:34px;height:34px;border-radius:9px;background:var(--gold);display:grid;place-items:center;flex-shrink:0">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5a6 3 0 0012 0v-5"/></svg>
+    </div>
+    <h2>Admin Panel</h2>
+    <span id="admin-name" style="font-size:13px;opacity:.8"></span>
+    <span id="role-badge" class="role-badge"></span>
+    <button class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="signOut()">Sign out</button>
+  </header>
+
+  <div class="layout">
+    <aside>
+      <div class="nav-section">Content</div>
+      <div class="nav-item active" onclick="switchTab('dashboard',this)"><span class="ic">📊</span>Dashboard</div>
+      <div class="nav-item" onclick="switchTab('mentors',this)"><span class="ic">🤝</span>Mentors</div>
+      <div class="nav-item" onclick="switchTab('classes',this)"><span class="ic">🎓</span>Masterclasses</div>
+      <div class="nav-item" onclick="switchTab('comps',this)"><span class="ic">🏆</span>Competitions</div>
+      <div class="nav-item" onclick="switchTab('interns',this)"><span class="ic">💼</span>Internships</div>
+      <div class="nav-item" onclick="switchTab('honors',this)"><span class="ic">⭐</span>Honors</div>
+      <div class="nav-section">People</div>
+      <div class="nav-item" onclick="switchTab('users',this)"><span class="ic">👥</span>All Users</div>
+      <div class="nav-item master-only" id="nav-admins" onclick="switchTab('admins',this)"><span class="ic">🔐</span>Admin Access<span class="crown">👑</span></div>
+    </aside>
+
+    <main>
+      <!-- DASHBOARD -->
+      <div class="tab show" id="tab-dashboard">
+        <div class="page-head"><h2>Dashboard</h2></div>
+        <div class="stats-row" id="stats-row"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px" id="recent-row">
+          <div class="card" style="padding:20px"><h3 style="font-size:16px;margin-bottom:14px">Recent Users</h3><div id="recent-users"></div></div>
+          <div class="card" style="padding:20px"><h3 style="font-size:16px;margin-bottom:14px">Quick Actions</h3>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+              <button class="btn btn-gold" onclick="switchTabByName('mentors')">+ Add Mentor</button>
+              <button class="btn btn-ink" onclick="switchTabByName('classes')">+ Add Masterclass</button>
+              <button class="btn btn-ghost" onclick="switchTabByName('comps')">+ Add Competition</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MENTORS -->
+      <div class="tab" id="tab-mentors">
+        <div class="page-head"><h2>Mentors</h2><button class="btn btn-gold" onclick="openModal('mentor')">+ Add Mentor</button></div>
+        <div class="card"><table class="tbl"><thead><tr><th>Name</th><th>Role</th><th>Topic</th><th>Actions</th></tr></thead><tbody id="mentors-body"></tbody></table></div>
+      </div>
+
+      <!-- MASTERCLASSES -->
+      <div class="tab" id="tab-classes">
+        <div class="page-head"><h2>Masterclasses</h2><button class="btn btn-gold" onclick="openModal('class')">+ Add Masterclass</button></div>
+        <div class="card"><table class="tbl"><thead><tr><th>Title</th><th>Host</th><th>Tag</th><th>Detail</th><th>Actions</th></tr></thead><tbody id="classes-body"></tbody></table></div>
+      </div>
+
+      <!-- COMPETITIONS -->
+      <div class="tab" id="tab-comps">
+        <div class="page-head"><h2>Competitions</h2><button class="btn btn-gold" onclick="openModal('comp')">+ Add Competition</button></div>
+        <div class="card"><table class="tbl"><thead><tr><th>Title</th><th>Prize</th><th>Days Left</th><th>Actions</th></tr></thead><tbody id="comps-body"></tbody></table></div>
+      </div>
+
+      <!-- INTERNSHIPS -->
+      <div class="tab" id="tab-interns">
+        <div class="page-head"><h2>Internships</h2><button class="btn btn-gold" onclick="openModal('intern')">+ Add Internship</button></div>
+        <div class="card"><table class="tbl"><thead><tr><th>Role</th><th>Company</th><th>Location</th><th>Pay</th><th>Actions</th></tr></thead><tbody id="interns-body"></tbody></table></div>
+      </div>
+
+      <!-- HONORS -->
+      <div class="tab" id="tab-honors">
+        <div class="page-head"><h2>Honors</h2><button class="btn btn-gold" onclick="openModal('honor')">+ Add Honor</button></div>
+        <div class="card"><table class="tbl"><thead><tr><th>Title</th><th>Stream</th><th>Winner</th><th>Year</th><th>Actions</th></tr></thead><tbody id="honors-body"></tbody></table></div>
+      </div>
+
+      <!-- ALL USERS -->
+      <div class="tab" id="tab-users">
+        <div class="page-head"><h2>All Users</h2></div>
+        <div class="card"><table class="tbl"><thead><tr><th>Name</th><th>Email</th><th>Field</th><th>Role</th></tr></thead><tbody id="users-body"></tbody></table></div>
+      </div>
+
+      <!-- ADMIN ACCESS (master only) -->
+      <div class="tab" id="tab-admins">
+        <div class="page-head"><h2>Admin Access</h2><span class="badge badge-gold">👑 Master only</span></div>
+        <div class="lock-msg" id="admins-lock">You need master admin access to manage roles.</div>
+        <div id="admins-content">
+          <div class="card"><table class="tbl"><thead><tr><th>Name</th><th>Email</th><th>Current Role</th><th>Change Role</th><th>Actions</th></tr></thead><tbody id="admins-body"></tbody></table></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal-bg" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-head"><h3 id="modal-title">Add</h3><button class="close-btn" onclick="closeModal()">×</button></div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+const API = (window.ALUMNUS_API || "https://alumnus-api.onrender.com") + "/api";
+let TOKEN = localStorage.getItem("alumnus_token");
+let ME = null, currentType = null, editingId = null;
+
+/* ---- auth ---- */
+async function doLogin() {
+  const email = document.getElementById("l-email").value.trim();
+  const pass  = document.getElementById("l-pass").value;
+  const err   = document.getElementById("login-err");
+  err.textContent = "";
+  try {
+    const r = await api("/auth/login","POST",{email,password:pass});
+    if (!r.token) throw new Error();
+    TOKEN = r.token; localStorage.setItem("alumnus_token",TOKEN);
+    const me = await api("/me");
+    if (me.role !== "admin" && me.role !== "master") {
+      err.textContent = "This account does not have admin access.";
+      TOKEN = null; localStorage.removeItem("alumnus_token"); return;
+    }
+    bootApp(me);
+  } catch { err.textContent = "Invalid email or password."; }
+}
+
+function bootApp(me) {
+  ME = me;
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  document.getElementById("admin-name").textContent = me.name;
+  const rb = document.getElementById("role-badge");
+  rb.textContent = me.role === "master" ? "👑 Master Admin" : "Admin";
+  rb.className = "role-badge " + (me.role === "master" ? "role-master" : "role-admin");
+  // show/hide master-only nav
+  const navAdmins = document.getElementById("nav-admins");
+  if (me.role !== "master") navAdmins.style.opacity = ".4";
+  loadAll();
+}
+
+function signOut() { TOKEN = null; localStorage.removeItem("alumnus_token"); location.reload(); }
+
+window.addEventListener("DOMContentLoaded", async () => {
+  if (!TOKEN) return;
+  try { const me = await api("/me"); if (me.role==="admin"||me.role==="master") { bootApp(me); return; } } catch {}
+  TOKEN = null; localStorage.removeItem("alumnus_token");
+});
+
+/* ---- api ---- */
+async function api(path,method="GET",body) {
+  const opts={method,headers:{"Content-Type":"application/json",...(TOKEN?{Authorization:"Bearer "+TOKEN}:{})}};
+  if (body) opts.body=JSON.stringify(body);
+  const r=await fetch(API+path,opts);
+  if (!r.ok) throw new Error(r.status);
+  return r.json();
+}
+
+/* ---- nav ---- */
+function switchTab(name,el) {
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("show"));
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  document.getElementById("tab-"+name).classList.add("show");
+  if (el) el.classList.add("active");
+  if (name==="admins") {
+    if (ME?.role!=="master") { document.getElementById("admins-lock").classList.add("show"); document.getElementById("admins-content").classList.add("locked"); }
+    else { document.getElementById("admins-lock").classList.remove("show"); document.getElementById("admins-content").classList.remove("locked"); loadAdmins(); }
+  }
+}
+function switchTabByName(name) {
+  const el = document.querySelector(`.nav-item[onclick*="'${name}'"]`);
+  switchTab(name,el); openModal(name==="mentors"?"mentor":name==="classes"?"class":name==="comps"?"comp":"intern");
+}
+
+/* ---- toast ---- */
+function toast(msg,ok=true) {
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.style.background=ok?"#11213F":"#B0413E";
+  t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2800);
+}
+
+/* ---- load all ---- */
+async function loadAll() { await Promise.all([loadDashboard(),loadMentors(),loadClasses(),loadComps(),loadInterns(),loadHonors(),loadUsers()]); }
+
+/* ---- dashboard ---- */
+async function loadDashboard() {
+  const [mentors,classes,comps,interns,honors,users] = await Promise.all([
+    api("/mentors"),api("/masterclasses"),api("/competitions"),api("/internships"),api("/honors"),api("/admin/users")
+  ]);
+  document.getElementById("stats-row").innerHTML = [
+    ["Mentors",mentors.length,"🤝"],["Masterclasses",classes.length,"🎓"],
+    ["Competitions",comps.length,"🏆"],["Internships",interns.length,"💼"],
+    ["Honors",honors.length,"⭐"],["Users",users.length,"👥"]
+  ].map(([l,n,i])=>`<div class="stat-card"><div style="font-size:26px">${i}</div><div class="num">${n}</div><div class="lbl">${l}</div></div>`).join("");
+  document.getElementById("recent-users").innerHTML = users.slice(0,5).map(u=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)">
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--ink2);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700;flex-shrink:0">${u.name.split(" ").map(w=>w[0]).join("").slice(0,2)}</div>
+      <div><div style="font-size:13px;font-weight:600">${u.name}</div><div style="font-size:11px;color:var(--muted)">${u.email}</div></div>
+      <span class="badge ${u.role==='master'?'badge-gold':u.role==='admin'?'badge-green':'badge-muted'}" style="margin-left:auto">${u.role}</span>
+    </div>`).join("");
+}
+
+/* ---- mentors ---- */
+async function loadMentors() {
+  const rows = await api("/mentors");
+  document.getElementById("mentors-body").innerHTML = rows.map(m=>`<tr>
+    <td><strong>${m.name}</strong>${m.photo_url?` <a href="${m.photo_url}" target="_blank" style="color:var(--gold);font-size:11px">📷</a>`:""}</td>
+    <td style="color:var(--muted);font-size:12px">${m.role||"—"}</td>
+    <td><span class="badge badge-muted">${m.topic||"—"}</span></td>
+    <td><div class="actions">
+      <button class="btn btn-ghost btn-sm" onclick='openModal("mentor",${JSON.stringify(m)})'>Edit</button>
+      <button class="btn btn-red btn-sm" onclick="del('mentors',${m.id},loadMentors)">Delete</button>
+    </div></td></tr>`).join("");
+}
+
+/* ---- masterclasses ---- */
+async function loadClasses() {
+  const rows = await api("/masterclasses");
+  document.getElementById("classes-body").innerHTML = rows.map(c=>`<tr>
+    <td><strong>${c.title}</strong></td>
+    <td>${c.host||"—"}</td>
+    <td><span class="badge badge-muted">${c.tag||"—"}</span></td>
+    <td style="color:var(--muted);font-size:12px">${c.detail||"—"}</td>
+    <td><div class="actions">
+      <button class="btn btn-ghost btn-sm" onclick='openModal("class",${JSON.stringify(c)})'>Edit</button>
+      <button class="btn btn-red btn-sm" onclick="del('masterclasses',${c.id},loadClasses)">Delete</button>
+    </div></td></tr>`).join("");
+}
+
+/* ---- competitions ---- */
+async function loadComps() {
+  const rows = await api("/competitions");
+  document.getElementById("comps-body").innerHTML = rows.map(c=>`<tr>
+    <td><strong>${c.title}</strong></td>
+    <td>${c.prize||"—"}</td>
+    <td>${c.days_left} days</td>
+    <td><div class="actions">
+      <button class="btn btn-ghost btn-sm" onclick='openModal("comp",${JSON.stringify(c)})'>Edit</button>
+      <button class="btn btn-red btn-sm" onclick="del('competitions',${c.id},loadComps)">Delete</button>
+    </div></td></tr>`).join("");
+}
+
+/* ---- internships ---- */
+async function loadInterns() {
+  const rows = await api("/internships");
+  document.getElementById("interns-body").innerHTML = rows.map(i=>`<tr>
+    <td><strong>${i.role}</strong></td>
+    <td>${i.company||"—"}</td>
+    <td>${i.location||"—"}</td>
+    <td>${i.pay||"—"}</td>
+    <td><div class="actions">
+      <button class="btn btn-ghost btn-sm" onclick='openModal("intern",${JSON.stringify(i)})'>Edit</button>
+      <button class="btn btn-red btn-sm" onclick="del('internships',${i.id},loadInterns)">Delete</button>
+    </div></td></tr>`).join("");
+}
+
+/* ---- honors ---- */
+async function loadHonors() {
+  const rows = await api("/honors");
+  document.getElementById("honors-body").innerHTML = rows.map(h=>`<tr>
+    <td><strong>${h.title}</strong></td>
+    <td>${h.stream||"—"}</td>
+    <td>${h.winner||"—"}</td>
+    <td>${h.year||"—"}</td>
+    <td><div class="actions">
+      <button class="btn btn-ghost btn-sm" onclick='openModal("honor",${JSON.stringify(h)})'>Edit</button>
+      <button class="btn btn-red btn-sm" onclick="del('honors',${h.id},loadHonors)">Delete</button>
+    </div></td></tr>`).join("");
+}
+
+/* ---- users (read-only for admins) ---- */
+async function loadUsers() {
+  const rows = await api("/admin/users");
+  document.getElementById("users-body").innerHTML = rows.map(u=>`<tr>
+    <td><strong>${u.name}</strong></td>
+    <td style="color:var(--muted);font-size:12px">${u.email}</td>
+    <td>${u.field||"—"}</td>
+    <td><span class="badge ${u.role==='master'?'badge-gold':u.role==='admin'?'badge-green':'badge-muted'}">${u.role==='master'?'👑 Master':u.role==='admin'?'Admin':'User'}</span></td>
+    </tr>`).join("");
+}
+
+/* ---- admin access tab (master only) ---- */
+async function loadAdmins() {
+  const rows = await api("/admin/users");
+  document.getElementById("admins-body").innerHTML = rows.map(u=>`<tr>
+    <td><strong>${u.name}</strong></td>
+    <td style="color:var(--muted);font-size:12px">${u.email}</td>
+    <td><span class="badge ${u.role==='master'?'badge-gold':u.role==='admin'?'badge-green':'badge-muted'}">${u.role==='master'?'👑 Master':u.role==='admin'?'Admin':'User'}</span></td>
+    <td>
+      <select id="role-${u.id}" style="width:130px;padding:6px 10px">
+        <option value="user" ${u.role==='user'?'selected':''}>User</option>
+        <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+        <option value="master" ${u.role==='master'?'selected':''}>👑 Master</option>
+      </select>
+    </td>
+    <td><div class="actions">
+      <button class="btn btn-ink btn-sm" onclick="setRole('${u.id}')">Save</button>
+      ${u.role!=='master'?`<button class="btn btn-red btn-sm" onclick="delUser('${u.id}')">Remove</button>`:''}
+    </div></td></tr>`).join("");
+}
+
+async function setRole(id) {
+  const role = document.getElementById("role-"+id).value;
+  try { await api("/admin/users/"+id,"PATCH",{role}); toast("Role updated"); loadAdmins(); loadUsers(); loadDashboard(); }
+  catch(e) { toast(e.message==="400"?"Cannot remove the only master admin":"Error updating role",false); }
+}
+
+async function delUser(id) {
+  if (!confirm("Remove this user from the system?")) return;
+  try { await api("/admin/users/"+id,"DELETE"); toast("User removed"); loadAdmins(); loadUsers(); loadDashboard(); }
+  catch { toast("Could not delete user",false); }
+}
+
+/* ---- delete content ---- */
+async function del(type,id,reload) {
+  if (!confirm("Delete this item?")) return;
+  await api("/admin/"+type+"/"+id,"DELETE");
+  toast("Deleted"); reload();
+}
+
+/* ---- modal forms ---- */
+const FORMS = {
+  mentor:(d={})=>`
+    <div class="form-row">
+      <div class="field"><label>Full Name *</label><input id="f-name" value="${esc(d.name)}"/></div>
+      <div class="field"><label>Topic / Expertise</label><input id="f-topic" value="${esc(d.topic)}"/></div>
+    </div>
+    <div class="field"><label>Role & Organisation</label><input id="f-role" value="${esc(d.role)}" placeholder="e.g. AI Research Lead · DeepMind"/></div>
+    <div class="field"><label>Bio</label><textarea id="f-bio">${esc(d.bio)}</textarea></div>
+    <div class="form-row">
+      <div class="field"><label>Photo URL</label><input id="f-photo" value="${esc(d.photo_url)}" placeholder="https://..."/></div>
+      <div class="field"><label>Card Colour</label><input id="f-color" type="color" value="${d.color||'#3B5BA9'}" style="height:42px;padding:4px"/></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>LinkedIn URL</label><input id="f-linkedin" value="${esc(d.linkedin)}" placeholder="https://linkedin.com/in/..."/></div>
+      <div class="field"><label>Twitter / X URL</label><input id="f-twitter" value="${esc(d.twitter)}" placeholder="https://x.com/..."/></div>
+    </div>`,
+  class:(d={})=>`
+    <div class="field"><label>Title *</label><input id="f-title" value="${esc(d.title)}"/></div>
+    <div class="form-row">
+      <div class="field"><label>Host / By</label><input id="f-host" value="${esc(d.host)}"/></div>
+      <div class="field"><label>Tag</label>
+        <select id="f-tag"><option ${d.tag==='Industry'?'selected':''}>Industry</option><option ${d.tag==='Faculty'?'selected':''}>Faculty</option><option ${d.tag==='Expert'?'selected':''}>Expert</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Detail (e.g. "6 sessions · Live")</label><input id="f-detail" value="${esc(d.detail)}"/></div>
+    <div class="field"><label>Card Colour</label><input id="f-color" type="color" value="${d.color||'#1B2F52'}" style="height:42px;padding:4px;width:80px"/></div>`,
+  comp:(d={})=>`
+    <div class="field"><label>Title *</label><input id="f-title" value="${esc(d.title)}"/></div>
+    <div class="field"><label>Prize / Reward</label><input id="f-prize" value="${esc(d.prize)}"/></div>
+    <div class="form-row">
+      <div class="field"><label>Days Left to Register</label><input id="f-days" type="number" value="${d.days_left||30}"/></div>
+      <div class="field"><label>Card Colour</label><input id="f-color" type="color" value="${d.color||'#13294B'}" style="height:42px;padding:4px"/></div>
+    </div>`,
+  intern:(d={})=>`
+    <div class="form-row">
+      <div class="field"><label>Role *</label><input id="f-role" value="${esc(d.role)}"/></div>
+      <div class="field"><label>Company</label><input id="f-company" value="${esc(d.company)}"/></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Location</label><input id="f-location" value="${esc(d.location)}"/></div>
+      <div class="field"><label>Pay / Stipend</label><input id="f-pay" value="${esc(d.pay)}"/></div>
+    </div>`,
+  honor:(d={})=>`
+    <div class="field"><label>Award Title *</label><input id="f-title" value="${esc(d.title)}"/></div>
+    <div class="form-row">
+      <div class="field"><label>Stream / Category</label><input id="f-stream" value="${esc(d.stream)}"/></div>
+      <div class="field"><label>Winner Name</label><input id="f-winner" value="${esc(d.winner)}"/></div>
+    </div>
+    <div class="field"><label>Year</label><input id="f-year" type="number" value="${d.year||new Date().getFullYear()}"/></div>`,
+};
+const LABELS = {mentor:"Mentor",class:"Masterclass",comp:"Competition",intern:"Internship",honor:"Honor"};
+const esc = s => (s||"").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+
+function openModal(type,data) {
+  currentType=type; editingId=data?.id||null;
+  document.getElementById("modal-title").textContent=(editingId?"Edit ":"Add ")+LABELS[type];
+  document.getElementById("modal-body").innerHTML=FORMS[type](data||{})+`
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveModal()">Save ${LABELS[type]}</button>
+    </div>`;
+  document.getElementById("modal-bg").classList.add("open");
+}
+function closeModal(){document.getElementById("modal-bg").classList.remove("open")}
+function closeModalOutside(e){if(e.target.id==="modal-bg")closeModal()}
+const val=id=>{const el=document.getElementById(id);return el?el.value.trim():""};
+
+async function saveModal() {
+  const type=currentType; let body={},endpoint="",reload;
+  if(type==="mentor"){
+    body={name:val("f-name"),role:val("f-role"),topic:val("f-topic"),color:val("f-color"),photo_url:val("f-photo"),bio:val("f-bio"),linkedin:val("f-linkedin"),twitter:val("f-twitter")};
+    if(!body.name){toast("Name is required",false);return}
+    endpoint="/admin/mentors";reload=loadMentors;
+  }else if(type==="class"){
+    body={title:val("f-title"),host:val("f-host"),detail:val("f-detail"),tag:val("f-tag"),color:val("f-color")};
+    if(!body.title){toast("Title is required",false);return}
+    endpoint="/admin/masterclasses";reload=loadClasses;
+  }else if(type==="comp"){
+    body={title:val("f-title"),prize:val("f-prize"),days_left:parseInt(val("f-days"))||30,color:val("f-color")};
+    if(!body.title){toast("Title is required",false);return}
+    endpoint="/admin/competitions";reload=loadComps;
+  }else if(type==="intern"){
+    body={role:val("f-role"),company:val("f-company"),location:val("f-location"),pay:val("f-pay")};
+    if(!body.role){toast("Role is required",false);return}
+    endpoint="/admin/internships";reload=loadInterns;
+  }else if(type==="honor"){
+    body={title:val("f-title"),stream:val("f-stream"),winner:val("f-winner"),year:parseInt(val("f-year"))||new Date().getFullYear()};
+    if(!body.title){toast("Title is required",false);return}
+    endpoint="/admin/honors";reload=loadHonors;
+  }
+  try{
+    if(editingId){await api(endpoint+"/"+editingId,"PUT",body);toast("Updated successfully")}
+    else{await api(endpoint,"POST",body);toast("Added successfully")}
+    closeModal();reload();loadDashboard();
+  }catch{toast("Something went wrong",false)}
+}
+</script>
+</body>
+</html>
