@@ -27,10 +27,12 @@ db.exec(`
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY, name TEXT, email TEXT UNIQUE, pass_hash TEXT,
   field TEXT, grad_year INTEGER, avatar_color TEXT, token TEXT,
-  tags TEXT DEFAULT '[]', mutual INTEGER DEFAULT 0, online INTEGER DEFAULT 0
+  tags TEXT DEFAULT '[]', mutual INTEGER DEFAULT 0, online INTEGER DEFAULT 0,
+  role TEXT DEFAULT 'user'
 );
 CREATE TABLE IF NOT EXISTS mentors (
-  id INTEGER PRIMARY KEY, name TEXT, role TEXT, topic TEXT, color TEXT
+  id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, role TEXT, topic TEXT,
+  color TEXT, photo_url TEXT, bio TEXT, linkedin TEXT, twitter TEXT
 );
 CREATE TABLE IF NOT EXISTS masterclasses (
   id INTEGER PRIMARY KEY, title TEXT, host TEXT, detail TEXT, tag TEXT, color TEXT
@@ -66,12 +68,29 @@ const hash = (p) => crypto.createHash("sha256").update(p).digest("hex");
 const newToken = () => crypto.randomBytes(24).toString("hex");
 const safeJSON = (s) => { try { return JSON.parse(s || "[]"); } catch { return []; } };
 
-function auth(req, res, next) {
+function getUser(req) {
   const t = (req.headers.authorization || "").replace("Bearer ", "");
-  const user = db.prepare("SELECT * FROM users WHERE token = ?").get(t);
-  if (!user) return res.status(401).json({ error: "unauthorized" });
-  req.user = user;
-  next();
+  return db.prepare("SELECT * FROM users WHERE token = ?").get(t) || null;
+}
+
+function auth(req, res, next) {
+  const u = getUser(req);
+  if (!u) return res.status(401).json({ error: "unauthorized" });
+  req.user = u; next();
+}
+
+/* any admin or master admin */
+function adminAuth(req, res, next) {
+  const u = getUser(req);
+  if (!u || (u.role !== "admin" && u.role !== "master")) return res.status(403).json({ error: "admin only" });
+  req.user = u; next();
+}
+
+/* master admin only */
+function masterAuth(req, res, next) {
+  const u = getUser(req);
+  if (!u || u.role !== "master") return res.status(403).json({ error: "master admin only" });
+  req.user = u; next();
 }
 
 /* ---------------- auth ---------------- */
@@ -98,8 +117,8 @@ app.post("/api/auth/login", (req, res) => {
 });
 
 app.get("/api/me", auth, (req, res) => {
-  const { id, name, email, field, grad_year, avatar_color } = req.user;
-  res.json({ id, name, email, field, grad_year, avatar_color });
+  const { id, name, email, field, grad_year, avatar_color, role } = req.user;
+  res.json({ id, name, email, field, grad_year, avatar_color, role: role || "user", is_admin: role === "admin" || role === "master" });
 });
 
 /* ---------------- catalog (public reads) ---------------- */
@@ -181,6 +200,145 @@ app.post("/api/posts/:id/like", auth, (req, res) => {
 /* ---------------- health ---------------- */
 app.get("/api/health", (_req, res) => res.json({ status: "ok", time: new Date().toISOString() }));
 
+/* ================================================================
+   ADMIN ENDPOINTS — require is_admin = 1
+   ================================================================ */
+
+/* --- users (master admin only for role changes) --- */
+app.get("/api/admin/users", adminAuth, (_req, res) =>
+  res.json(db.prepare("SELECT id,name,email,field,grad_year,role FROM users ORDER BY name").all()));
+
+app.patch("/api/admin/users/:id", masterAuth, (req, res) => {
+  const { role } = req.body || {};
+  if (!["user", "admin", "master"].includes(role)) return res.status(400).json({ error: "invalid role" });
+  // prevent demoting the last master
+  if (role !== "master") {
+    const masters = db.prepare("SELECT COUNT(*) as c FROM users WHERE role='master'").get();
+    const target = db.prepare("SELECT role FROM users WHERE id=?").get(req.params.id);
+    if (target?.role === "master" && masters.c <= 1) return res.status(400).json({ error: "cannot remove the only master admin" });
+  }
+  db.prepare("UPDATE users SET role=? WHERE id=?").run(role, req.params.id);
+  res.json({ ok: true });
+});
+
+app.delete("/api/admin/users/:id", masterAuth, (req, res) => {
+  const target = db.prepare("SELECT role FROM users WHERE id=?").get(req.params.id);
+  if (target?.role === "master") return res.status(400).json({ error: "cannot delete master admin" });
+  db.prepare("DELETE FROM users WHERE id=?").run(req.params.id);
+  res.json({ ok: true });
+});
+
+/* --- mentors --- */
+app.post("/api/admin/mentors", adminAuth, (req, res) => {
+  const { name, role, topic, color, photo_url, bio, linkedin, twitter } = req.body || {};
+  if (!name) return res.status(400).json({ error: "name required" });
+  const r = db.prepare(
+    "INSERT INTO mentors (name,role,topic,color,photo_url,bio,linkedin,twitter) VALUES (?,?,?,?,?,?,?,?)"
+  ).run(name, role||"", topic||"", color||"#3B5BA9", photo_url||"", bio||"", linkedin||"", twitter||"");
+  res.json({ id: r.lastInsertRowid });
+});
+
+app.put("/api/admin/mentors/:id", adminAuth, (req, res) => {
+  const { name, role, topic, color, photo_url, bio, linkedin, twitter } = req.body || {};
+  db.prepare(
+    "UPDATE mentors SET name=?,role=?,topic=?,color=?,photo_url=?,bio=?,linkedin=?,twitter=? WHERE id=?"
+  ).run(name, role||"", topic||"", color||"#3B5BA9", photo_url||"", bio||"", linkedin||"", twitter||"", req.params.id);
+  res.json({ ok: true });
+});
+
+app.delete("/api/admin/mentors/:id", adminAuth, (req, res) => {
+  db.prepare("DELETE FROM mentors WHERE id=?").run(req.params.id);
+  res.json({ ok: true });
+});
+
+/* --- masterclasses --- */
+app.post("/api/admin/masterclasses", adminAuth, (req, res) => {
+  const { title, host, detail, tag, color } = req.body || {};
+  if (!title) return res.status(400).json({ error: "title required" });
+  const r = db.prepare(
+    "INSERT INTO masterclasses (title,host,detail,tag,color) VALUES (?,?,?,?,?)"
+  ).run(title, host||"", detail||"", tag||"", color||"#1B2F52");
+  res.json({ id: r.lastInsertRowid });
+});
+
+app.put("/api/admin/masterclasses/:id", adminAuth, (req, res) => {
+  const { title, host, detail, tag, color } = req.body || {};
+  db.prepare("UPDATE masterclasses SET title=?,host=?,detail=?,tag=?,color=? WHERE id=?")
+    .run(title, host||"", detail||"", tag||"", color||"#1B2F52", req.params.id);
+  res.json({ ok: true });
+});
+
+app.delete("/api/admin/masterclasses/:id", adminAuth, (req, res) => {
+  db.prepare("DELETE FROM masterclasses WHERE id=?").run(req.params.id);
+  res.json({ ok: true });
+});
+
+/* --- competitions --- */
+app.post("/api/admin/competitions", adminAuth, (req, res) => {
+  const { title, prize, days_left, color } = req.body || {};
+  if (!title) return res.status(400).json({ error: "title required" });
+  const r = db.prepare(
+    "INSERT INTO competitions (title,prize,days_left,color) VALUES (?,?,?,?)"
+  ).run(title, prize||"", days_left||30, color||"#13294B");
+  res.json({ id: r.lastInsertRowid });
+});
+
+app.put("/api/admin/competitions/:id", adminAuth, (req, res) => {
+  const { title, prize, days_left, color } = req.body || {};
+  db.prepare("UPDATE competitions SET title=?,prize=?,days_left=?,color=? WHERE id=?")
+    .run(title, prize||"", days_left||30, color||"#13294B", req.params.id);
+  res.json({ ok: true });
+});
+
+app.delete("/api/admin/competitions/:id", adminAuth, (req, res) => {
+  db.prepare("DELETE FROM competitions WHERE id=?").run(req.params.id);
+  res.json({ ok: true });
+});
+
+/* --- internships --- */
+app.post("/api/admin/internships", adminAuth, (req, res) => {
+  const { role, company, location, pay } = req.body || {};
+  if (!role) return res.status(400).json({ error: "role required" });
+  const r = db.prepare(
+    "INSERT INTO internships (role,company,location,pay) VALUES (?,?,?,?)"
+  ).run(role, company||"", location||"", pay||"");
+  res.json({ id: r.lastInsertRowid });
+});
+
+app.put("/api/admin/internships/:id", adminAuth, (req, res) => {
+  const { role, company, location, pay } = req.body || {};
+  db.prepare("UPDATE internships SET role=?,company=?,location=?,pay=? WHERE id=?")
+    .run(role, company||"", location||"", pay||"", req.params.id);
+  res.json({ ok: true });
+});
+
+app.delete("/api/admin/internships/:id", adminAuth, (req, res) => {
+  db.prepare("DELETE FROM internships WHERE id=?").run(req.params.id);
+  res.json({ ok: true });
+});
+
+/* --- honors --- */
+app.post("/api/admin/honors", adminAuth, (req, res) => {
+  const { title, stream, winner, year } = req.body || {};
+  if (!title) return res.status(400).json({ error: "title required" });
+  const r = db.prepare(
+    "INSERT INTO honors (title,stream,winner,year) VALUES (?,?,?,?)"
+  ).run(title, stream||"", winner||"", year||new Date().getFullYear());
+  res.json({ id: r.lastInsertRowid });
+});
+
+app.put("/api/admin/honors/:id", adminAuth, (req, res) => {
+  const { title, stream, winner, year } = req.body || {};
+  db.prepare("UPDATE honors SET title=?,stream=?,winner=?,year=? WHERE id=?")
+    .run(title, stream||"", winner||"", year||new Date().getFullYear(), req.params.id);
+  res.json({ ok: true });
+});
+
+app.delete("/api/admin/honors/:id", adminAuth, (req, res) => {
+  db.prepare("DELETE FROM honors WHERE id=?").run(req.params.id);
+  res.json({ ok: true });
+});
+
 /* ---------------- auto-seed on first start ---------------- */
 function autoSeed() {
   if (db.prepare("SELECT 1 FROM mentors LIMIT 1").get()) return; // already seeded
@@ -225,14 +383,30 @@ function autoSeed() {
   ];
   peers.forEach(([n, f, c, y, mu, tg, on]) => {
     const id = crypto.randomUUID();
-    db.prepare(`INSERT OR IGNORE INTO users (id,name,email,pass_hash,field,grad_year,avatar_color,tags,mutual,online)
-                VALUES (?,?,?,?,?,?,?,?,?,?)`)
+    db.prepare(`INSERT OR IGNORE INTO users (id,name,email,pass_hash,field,grad_year,avatar_color,tags,mutual,online,role)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?)`)
       .run(id, n, n.replace(/\W/g,"").toLowerCase()+"@alumnus.io",
-           crypto.createHash("sha256").update("demo1234").digest("hex"), f, y, c, tg, mu, on);
+           crypto.createHash("sha256").update("demo1234").digest("hex"), f, y, c, tg, mu, on, "user");
   });
   console.log("Seed complete.");
 }
 autoSeed();
+
+/* ---------------- master admin bootstrap ----------------
+   POST /api/auth/make-master  { secret, email }
+   One-time use: promotes an existing account to master.
+   Requires MASTER_SECRET env variable to be set on Render.
+   -------------------------------------------------------- */
+app.post("/api/auth/make-master", (req, res) => {
+  const { secret, email } = req.body || {};
+  const expected = process.env.MASTER_SECRET;
+  if (!expected || secret !== expected) return res.status(403).json({ error: "invalid secret" });
+  const u = db.prepare("SELECT id FROM users WHERE email=?").get(email);
+  if (!u) return res.status(404).json({ error: "user not found" });
+  db.prepare("UPDATE users SET role='master' WHERE id=?").run(u.id);
+  console.log("Master admin set:", email);
+  res.json({ ok: true, message: email + " is now master admin" });
+});
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, "0.0.0.0", () => console.log(`ALUMNUS API on port ${PORT}`));
