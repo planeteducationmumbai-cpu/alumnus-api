@@ -347,11 +347,11 @@ function autoSeed() {
   if (db.prepare("SELECT 1 FROM mentors LIMIT 1").get()) return; // already seeded
   console.log("Empty database — running first-time seed…");
   const mentors = [
-    [1, "Dr. Priya Nair", "AI Research Lead · DeepMind", "AI / ML", "#3B5BA9"],
-    [2, "James Okoro", "VP Engineering · Stripe", "Systems", "#2F7D5B"],
-    [3, "Lena Brandt", "Design Director · Figma", "Product Design", "#B05B7A"],
+    [1, "Dr. Priya Nair", "AI Research Lead · DeepMind", "AI / ML", "#3B5BA9", "", "", "", ""],
+    [2, "James Okoro", "VP Engineering · Stripe", "Systems", "#2F7D5B", "", "", "", ""],
+    [3, "Lena Brandt", "Design Director · Figma", "Product Design", "#B05B7A", "", "", "", ""],
   ];
-  mentors.forEach(m => db.prepare("INSERT OR IGNORE INTO mentors VALUES (?,?,?,?,?)").run(...m));
+  mentors.forEach(m => db.prepare("INSERT OR IGNORE INTO mentors (id,name,role,topic,color,photo_url,bio,linkedin,twitter) VALUES (?,?,?,?,?,?,?,?,?)").run(...m));
   const classes = [
     [1, "AI & The Future of Tech", "Innovate Corp", "6 sessions · Live", "Industry", "#1B2F52"],
     [2, "Creative Writing Studio", "Faculty of Arts", "4 sessions · On-demand", "Faculty", "#B05B7A"],
