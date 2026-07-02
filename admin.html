@@ -166,7 +166,7 @@ main{flex:1;padding:28px;overflow-y:auto}
       <!-- COMPETITIONS -->
       <div class="tab" id="tab-comps">
         <div class="page-head"><h2>Competitions</h2><button class="btn btn-gold" onclick="openModal('comp')">+ Add Competition</button></div>
-        <div class="card"><table class="tbl"><thead><tr><th>Title</th><th>Prize</th><th>Days Left</th><th>Actions</th></tr></thead><tbody id="comps-body"></tbody></table></div>
+        <div class="card"><table class="tbl"><thead><tr><th>Title</th><th>Prize</th><th>Scholarship</th><th>Days Left</th><th>Actions</th></tr></thead><tbody id="comps-body"></tbody></table></div>
       </div>
 
       <!-- INTERNSHIPS -->
@@ -339,11 +339,12 @@ async function loadClasses() {
 async function loadComps() {
   const rows = await api("/competitions");
   document.getElementById("comps-body").innerHTML = rows.map(c=>`<tr>
-    <td><strong>${c.title}</strong></td>
+    <td><strong>${c.title}</strong>${c.featured?' <span class="badge badge-gold">Featured</span>':''}</td>
     <td>${c.prize||"—"}</td>
+    <td>${c.scholarship_pct?`<span class="badge badge-green">${c.scholarship_pct}</span>`:"—"}</td>
     <td>${c.days_left} days</td>
     <td><div class="actions">
-      <button class="btn btn-ghost btn-sm" onclick='openModal("comp",${JSON.stringify(c)})'>Edit</button>
+      <button class="btn btn-ghost btn-sm" data-comp='${JSON.stringify(c).replace(/'/g,"&apos;")}' onclick='openModal("comp",JSON.parse(this.dataset.comp))'>Edit</button>
       <button class="btn btn-red btn-sm" onclick="del('competitions',${c.id},loadComps)">Delete</button>
     </div></td></tr>`).join("");
 }
@@ -455,10 +456,37 @@ const FORMS = {
     <div class="field"><label>Card Colour</label><input id="f-color" type="color" value="${d.color||'#1B2F52'}" style="height:42px;padding:4px;width:80px"/></div>`,
   comp:(d={})=>`
     <div class="field"><label>Title *</label><input id="f-title" value="${esc(d.title)}"/></div>
-    <div class="field"><label>Prize / Reward</label><input id="f-prize" value="${esc(d.prize)}"/></div>
+    <div class="form-row">
+      <div class="field"><label>Prize / Reward</label><input id="f-prize" value="${esc(d.prize)}" placeholder="e.g. Full Scholarship + Internship"/></div>
+      <div class="field"><label>Scholarship %</label>
+        <select id="f-scholpct"><option value="">—</option><option ${d.scholarship_pct==='25%'?'selected':''}>25%</option><option ${d.scholarship_pct==='50%'?'selected':''}>50%</option><option ${d.scholarship_pct==='100%'?'selected':''}>100%</option></select>
+      </div>
+    </div>
     <div class="form-row">
       <div class="field"><label>Days Left to Register</label><input id="f-days" type="number" value="${d.days_left||30}"/></div>
+      <div class="field"><label>Deadline (date or text)</label><input id="f-deadline" value="${esc(d.deadline)}" placeholder="e.g. 2026-07-15"/></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Stream / Field</label><input id="f-stream" value="${esc(d.stream)}" placeholder="e.g. Technology, All Streams"/></div>
+      <div class="field"><label>Scope</label><input id="f-scope" value="${esc(d.scope)}" placeholder="e.g. National, International"/></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Age Group / Eligibility</label><input id="f-ages" value="${esc(d.ages)}" placeholder="e.g. 18-25"/></div>
+      <div class="field"><label>Competition Type</label><input id="f-comptype" value="${esc(d.comp_type)}" placeholder="e.g. Submission, Live Event"/></div>
+    </div>
+    <div class="field"><label>Overview</label><textarea id="f-overview" placeholder="What is this competition about?">${esc(d.overview)}</textarea></div>
+    <div class="field"><label>Process</label><textarea id="f-process" placeholder="How does the competition run? Rounds, stages, format...">${esc(d.process)}</textarea></div>
+    <div class="field"><label>Eligibility Criteria</label><textarea id="f-criteria" placeholder="Who can apply?">${esc(d.criteria)}</textarea></div>
+    <div class="field"><label>How to Apply</label><textarea id="f-howapply" placeholder="Steps to register or submit">${esc(d.how_to_apply)}</textarea></div>
+    <div class="form-row">
+      <div class="field"><label>Contact Email</label><input id="f-contact" value="${esc(d.contact_email)}" placeholder="competitions@..."/></div>
+      <div class="field"><label>External Registration Link</label><input id="f-extlink" value="${esc(d.external_link)}" placeholder="https://..."/></div>
+    </div>
+    <div class="form-row">
       <div class="field"><label>Card Colour</label><input id="f-color" type="color" value="${d.color||'#13294B'}" style="height:42px;padding:4px"/></div>
+      <div class="field"><label>Featured on Homepage</label>
+        <select id="f-featured"><option value="0" ${!d.featured?'selected':''}>No</option><option value="1" ${d.featured?'selected':''}>Yes</option></select>
+      </div>
     </div>`,
   intern:(d={})=>`
     <div class="form-row">
@@ -505,7 +533,14 @@ async function saveModal() {
     if(!body.title){toast("Title is required",false);return}
     endpoint="/admin/masterclasses";reload=loadClasses;
   }else if(type==="comp"){
-    body={title:val("f-title"),prize:val("f-prize"),days_left:parseInt(val("f-days"))||30,color:val("f-color")};
+    body={
+      title:val("f-title"),prize:val("f-prize"),scholarship_pct:val("f-scholpct"),
+      days_left:parseInt(val("f-days"))||30,deadline:val("f-deadline"),color:val("f-color"),
+      stream:val("f-stream"),scope:val("f-scope"),ages:val("f-ages"),comp_type:val("f-comptype"),
+      overview:val("f-overview"),process:val("f-process"),criteria:val("f-criteria"),
+      how_to_apply:val("f-howapply"),contact_email:val("f-contact"),external_link:val("f-extlink"),
+      featured:val("f-featured")==="1"
+    };
     if(!body.title){toast("Title is required",false);return}
     endpoint="/admin/competitions";reload=loadComps;
   }else if(type==="intern"){

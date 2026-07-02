@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Competitions — Alumnus Honors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,300;9..144,0,500;9..144,0,600;9..144,1,300;9..144,1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0A0E1A;--bg2:#0D1120;--card:#1C2235;--gold:#C8A96E;--gold2:#A8893E;--text:#F5F0E8;--muted:#8B9BB4;--line:rgba(200,169,110,.15);--red:#E05C5C}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+a{text-decoration:none;color:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding:0 28px}
+
+/* nav */
+header{position:sticky;top:0;z-index:50;background:rgba(10,14,26,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:16px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-size:20px;font-weight:600;color:var(--text)}
+.logo{width:36px;height:36px;border-radius:0;background:var(--gold);display:grid;place-items:center;flex-shrink:0}
+.navlinks{display:flex;gap:4px;margin-left:12px}
+.navlinks a{font-size:13px;font-weight:600;color:var(--muted);padding:7px 11px}
+.navlinks a:hover,.navlinks a.active{color:var(--text)}
+.navlinks a.active{border-bottom:2px solid var(--gold)}
+.spacer{flex:1}
+.signin-btn{background:var(--gold);color:var(--bg);font-family:inherit;font-weight:700;font-size:13px;padding:10px 20px;border:none;cursor:pointer;letter-spacing:.3px}
+.burger{display:none;background:none;border:none;cursor:pointer}
+
+/* page header */
+.page-header{padding:64px 0 48px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.eyebrow:before{content:"";width:24px;height:1px;background:var(--gold)}
+.page-header h1{font-family:'Fraunces',serif;font-size:clamp(36px,4vw,60px);font-weight:300;line-height:1.05;letter-spacing:-.3px}
+.page-header h1 em{font-style:italic;color:var(--gold)}
+.page-header p{font-size:15px;color:var(--muted);margin-top:12px;max-width:560px;line-height:1.6}
+
+/* filters */
+.filter-bar{display:flex;gap:10px;padding:24px 0;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--line)}
+.filter-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.filter-btn{background:transparent;border:1px solid rgba(139,155,180,.2);color:var(--muted);font-family:inherit;font-size:12px;font-weight:600;padding:7px 14px;cursor:pointer;letter-spacing:.3px;transition:all .15s}
+.filter-btn:hover,.filter-btn.on{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.search-wrap{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid rgba(139,155,180,.15);padding:9px 14px}
+.search-wrap input{background:transparent;border:none;outline:none;font-family:inherit;font-size:13px;color:var(--text);width:200px}
+.search-wrap input::placeholder{color:var(--muted)}
+
+/* results count */
+.results-meta{display:flex;justify-content:space-between;align-items:center;padding:20px 0 16px}
+.results-meta span{font-size:13px;color:var(--muted)}
+.sort-sel{background:var(--card);border:1px solid rgba(139,155,180,.15);color:var(--text);font-family:inherit;font-size:13px;padding:8px 12px;outline:none;cursor:pointer}
+
+/* competition grid */
+.comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1px;background:var(--line);margin-bottom:80px}
+.comp-item{background:var(--bg);padding:0;cursor:pointer;transition:background .2s;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.comp-item:hover{background:var(--bg2)}
+.comp-item:hover .comp-arrow{opacity:1;transform:translateX(0)}
+.deadline-bar{width:4px;position:absolute;left:0;top:0;bottom:0;background:var(--gold)}
+.deadline-bar.urgent{background:var(--red)}
+.comp-inner{padding:28px 24px 24px 30px;flex:1;display:flex;flex-direction:column}
+.comp-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.days-chip{font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted)}
+.days-chip.urgent{color:var(--red)}
+.schol-chip{font-size:11px;font-weight:700;padding:4px 10px;background:rgba(200,169,110,.12);color:var(--gold);letter-spacing:.5px}
+.comp-item h3{font-family:'Fraunces',serif;font-size:20px;font-weight:500;line-height:1.2;color:var(--text);margin-bottom:8px}
+.comp-item .overview{font-size:13px;color:var(--muted);line-height:1.55;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.comp-footer{display:flex;align-items:center;justify-content:space-between;margin-top:18px;padding-top:14px;border-top:1px solid rgba(139,155,180,.1)}
+.comp-tags{display:flex;gap:6px;flex-wrap:wrap}
+.comp-tag{font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 8px;border:1px solid rgba(139,155,180,.2);color:var(--muted);text-transform:uppercase}
+.comp-arrow{color:var(--gold);font-size:16px;opacity:0;transform:translateX(-4px);transition:all .2s;flex-shrink:0}
+
+/* empty state */
+.empty{text-align:center;padding:80px 20px;color:var(--muted)}
+.empty h3{font-family:'Fraunces',serif;font-size:28px;font-weight:300;color:var(--text);margin-bottom:8px}
+
+/* footer */
+footer{background:#060810;border-top:1px solid var(--line);padding:40px 0 24px}
+.frow{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+footer p{font-size:13px;color:var(--muted)}
+.flinks{display:flex;gap:24px}
+.flinks a{font-size:13px;color:var(--muted)}
+.flinks a:hover{color:var(--gold)}
+
+@media(max-width:760px){.comp-grid{grid-template-columns:1fr}.navlinks,.search-wrap{display:none}.burger{display:block}.filter-bar{gap:6px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html">
+      <span class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A0E1A" stroke-width="2.5"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5a6 3 0 0012 0v-5"/></svg></span>
+      Alumnus
+    </a>
+    <nav class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="competitions.html" class="active">Competitions</a>
+      <a href="honors.html">Honors</a>
+      <a href="connect.html">Connect</a>
+      <a href="upskill.html">Upskill</a>
+      <a href="social.html">Social</a>
+      <a href="peers.html">Peers</a>
+    </nav>
+    <span class="spacer"></span>
+    <button class="signin-btn">Sign in</button>
+    <button class="burger" onclick="document.querySelector('.navlinks').classList.toggle('open')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="page-header">
+      <div class="eyebrow">Open Competitions</div>
+      <h1>Where ambition<br>meets <em>recognition.</em></h1>
+      <p>National-level competitions judged by an international jury. Win scholarships from 25% to full tuition coverage, internship placements, and global recognition.</p>
+    </div>
+
+    <div class="filter-bar">
+      <span class="filter-label">Scholarship</span>
+      <button class="filter-btn on" data-filter="schol" data-val="all">All</button>
+      <button class="filter-btn" data-filter="schol" data-val="25%">25%</button>
+      <button class="filter-btn" data-filter="schol" data-val="50%">50%</button>
+      <button class="filter-btn" data-filter="schol" data-val="100%">100%</button>
+
+      <span class="filter-label" style="margin-left:12px">Stream</span>
+      <button class="filter-btn on" data-filter="stream" data-val="all">All</button>
+      <div id="stream-filters"></div>
+
+      <div class="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B9BB4" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+        <input id="search" placeholder="Search competitions…"/>
+      </div>
+    </div>
+
+    <div class="results-meta">
+      <span id="result-count">Loading…</span>
+      <select class="sort-sel" id="sort-sel">
+        <option value="deadline">Sort: Deadline (soonest)</option>
+        <option value="schol">Sort: Scholarship (highest)</option>
+        <option value="alpha">Sort: A–Z</option>
+      </select>
+    </div>
+
+    <div class="comp-grid" id="comp-grid"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="frow">
+      <p>© 2026 Alumnus Honors</p>
+      <div class="flinks">
+        <a href="index.html">Home</a>
+        <a href="honors.html">Honors</a>
+        <a href="connect.html">Connect</a>
+        <a href="upskill.html">Upskill</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script>
+const API = (window.ALUMNUS_API || 'https://alumnus-api.onrender.com') + '/api';
+let ALL = [], scholFilter = 'all', streamFilter = 'all', searchQ = '';
+
+async function load() {
+  try {
+    ALL = await fetch(API + '/competitions').then(r => r.json());
+    // build stream filters
+    const streams = [...new Set(ALL.map(c => c.stream).filter(Boolean))];
+    document.getElementById('stream-filters').innerHTML = streams.map(s =>
+      `<button class="filter-btn" data-filter="stream" data-val="${s}">${s}</button>`
+    ).join('');
+    document.querySelectorAll('[data-filter]').forEach(btn => btn.onclick = function() {
+      const f = this.dataset.filter, v = this.dataset.val;
+      if (f === 'schol') scholFilter = v;
+      if (f === 'stream') streamFilter = v;
+      document.querySelectorAll(`[data-filter="${f}"]`).forEach(b => b.classList.remove('on'));
+      this.classList.add('on');
+      render();
+    });
+    document.getElementById('search').oninput = e => { searchQ = e.target.value.toLowerCase(); render(); };
+    document.getElementById('sort-sel').onchange = render;
+    render();
+  } catch { document.getElementById('comp-grid').innerHTML = '<div style="padding:60px;text-align:center;color:#8B9BB4">Could not load competitions.</div>'; }
+}
+
+function render() {
+  let data = ALL.filter(c => {
+    if (scholFilter !== 'all' && c.scholarship_pct !== scholFilter) return false;
+    if (streamFilter !== 'all' && c.stream !== streamFilter) return false;
+    if (searchQ && !c.title.toLowerCase().includes(searchQ) && !(c.overview||'').toLowerCase().includes(searchQ)) return false;
+    return true;
+  });
+  const sort = document.getElementById('sort-sel').value;
+  if (sort === 'deadline') data.sort((a,b) => (a.days_left||99)-(b.days_left||99));
+  if (sort === 'schol') data.sort((a,b) => parseInt(b.scholarship_pct)||0 - parseInt(a.scholarship_pct)||0);
+  if (sort === 'alpha') data.sort((a,b) => a.title.localeCompare(b.title));
+
+  document.getElementById('result-count').textContent = data.length + ' competition' + (data.length !== 1 ? 's' : '') + ' found';
+
+  if (!data.length) {
+    document.getElementById('comp-grid').innerHTML = `<div class="empty" style="grid-column:1/-1"><h3>No competitions match</h3><p>Try adjusting your filters.</p></div>`;
+    return;
+  }
+
+  document.getElementById('comp-grid').innerHTML = data.map(c => {
+    const urgent = c.days_left <= 7;
+    return `<div class="comp-item" onclick="location.href='competition.html?id=${c.id}'">
+      <div class="deadline-bar ${urgent?'urgent':''}"></div>
+      <div class="comp-inner">
+        <div class="comp-meta">
+          <span class="days-chip ${urgent?'urgent':''}">⏱ ${c.days_left} day${c.days_left!==1?'s':''} left${c.deadline?' · '+c.deadline:''}</span>
+          ${c.scholarship_pct?`<span class="schol-chip">${c.scholarship_pct} Scholarship</span>`:''}
+        </div>
+        <h3>${c.title}</h3>
+        <p class="overview">${c.overview||c.prize||''}</p>
+        <div class="comp-footer">
+          <div class="comp-tags">
+            ${c.stream?`<span class="comp-tag">${c.stream}</span>`:''}
+            ${c.scope?`<span class="comp-tag">${c.scope}</span>`:''}
+            ${c.ages?`<span class="comp-tag">${c.ages}</span>`:''}
+          </div>
+          <span class="comp-arrow">→</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+load();
+</script>
+</body>
+</html>

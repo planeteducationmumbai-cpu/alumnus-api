@@ -2,77 +2,233 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Alumnus — Alumni Network</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Alumnus Honors — Where Excellence Meets Opportunity</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,300;9..144,0,500;9..144,0,600;9..144,0,700;9..144,1,300;9..144,1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<style>
+/* ── Home-page specific overrides ── */
+body{background:#0A0E1A;color:#F5F0E8}
+
+/* hero — competitions */
+.comp-hero{padding:80px 0 0;position:relative;overflow:hidden}
+.comp-hero:before{content:"";position:absolute;top:-120px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(200,169,110,.12),transparent 70%);pointer-events:none}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#C8A96E;display:flex;align-items:center;gap:10px}
+.eyebrow:before{content:"";width:32px;height:1px;background:#C8A96E}
+.comp-hero h1{font-family:'Fraunces',serif;font-size:clamp(42px,5.5vw,78px);font-weight:300;line-height:1.02;margin-top:18px;max-width:820px;letter-spacing:-.5px}
+.comp-hero h1 em{font-style:italic;color:#C8A96E}
+.hero-sub{font-size:16px;color:#8B9BB4;max-width:520px;margin-top:18px;line-height:1.6}
+.hero-actions{display:flex;gap:14px;margin-top:32px;flex-wrap:wrap}
+.btn-prim{background:#C8A96E;color:#0A0E1A;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:14px;padding:14px 28px;border:none;cursor:pointer;letter-spacing:.3px;transition:filter .15s}
+.btn-prim:hover{filter:brightness(1.08)}
+.btn-sec{background:transparent;color:#F5F0E8;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:14px;padding:14px 28px;border:1px solid rgba(245,240,232,.2);cursor:pointer;letter-spacing:.3px;transition:border-color .2s}
+.btn-sec:hover{border-color:rgba(245,240,232,.5)}
+.scholarship-tags{display:flex;gap:10px;margin-top:28px;flex-wrap:wrap}
+.stag{background:rgba(200,169,110,.12);border:1px solid rgba(200,169,110,.25);color:#C8A96E;font-size:12px;font-weight:700;padding:6px 14px;letter-spacing:.5px}
+
+/* featured competition cards */
+.comp-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#1C2235;margin-top:56px;border-top:1px solid rgba(200,169,110,.2)}
+.comp-card{background:#0D1120;padding:28px 24px 24px;position:relative;overflow:hidden;cursor:pointer;transition:background .2s}
+.comp-card:hover{background:#111827}
+.comp-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#C8A96E}
+.comp-card .days{font-size:11px;color:#8B9BB4;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.comp-card .days span{color:#C8A96E;font-weight:700}
+.comp-card h3{font-family:'Fraunces',serif;font-size:20px;font-weight:500;line-height:1.2;color:#F5F0E8}
+.comp-card .prize{margin-top:10px;font-size:13px;color:#C8A96E;font-weight:600}
+.comp-card .tags{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
+.comp-card .tag{font-size:10px;font-weight:700;letter-spacing:.5px;padding:4px 9px;border:1px solid rgba(139,155,180,.2);color:#8B9BB4}
+.comp-card .arrow{position:absolute;bottom:22px;right:22px;color:#C8A96E;font-size:18px;opacity:0;transition:opacity .2s,transform .2s}
+.comp-card:hover .arrow{opacity:1;transform:translateX(4px)}
+.view-all-bar{background:#1C2235;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(200,169,110,.1)}
+.view-all-bar span{font-size:13px;color:#8B9BB4}
+.view-all-bar a{font-size:13px;font-weight:700;color:#C8A96E;text-decoration:none;letter-spacing:.3px}
+
+/* divider */
+.divider{height:1px;background:linear-gradient(to right,transparent,rgba(200,169,110,.2),transparent);margin:80px 0 0}
+
+/* pillars strip */
+.pillars-strip{padding:72px 0 80px}
+.pillars-strip .sec-eyebrow{margin-bottom:48px}
+.three-pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(200,169,110,.1)}
+.pillar-block{background:#0A0E1A;padding:36px 32px;cursor:pointer;transition:background .2s;position:relative}
+.pillar-block:hover{background:#0D1120}
+.pillar-block .num{font-family:'Fraunces',serif;font-size:48px;font-weight:300;color:rgba(200,169,110,.2);line-height:1;margin-bottom:16px}
+.pillar-block h3{font-family:'Fraunces',serif;font-size:24px;font-weight:500;color:#F5F0E8}
+.pillar-block p{font-size:14px;color:#8B9BB4;margin-top:10px;line-height:1.6}
+.pillar-block ul{margin-top:16px;padding:0;list-style:none}
+.pillar-block ul li{font-size:13px;color:#8B9BB4;padding:6px 0;border-bottom:1px solid rgba(139,155,180,.1);display:flex;align-items:center;gap:8px}
+.pillar-block ul li:before{content:"";width:4px;height:4px;background:#C8A96E;flex-shrink:0}
+.pillar-block .pill-link{display:inline-flex;align-items:center;gap:6px;margin-top:22px;font-size:13px;font-weight:700;color:#C8A96E;letter-spacing:.3px;text-decoration:none}
+.pillar-block .pill-link:after{content:"→"}
+
+/* footer */
+footer{background:#060810;border-top:1px solid rgba(200,169,110,.1);padding:52px 0 28px}
+.fgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px}
+footer .brand-name{font-family:'Fraunces',serif;font-size:22px;color:#F5F0E8;margin-bottom:10px}
+footer p,footer a{display:block;font-size:13px;color:#8B9BB4;margin:6px 0;text-decoration:none}
+footer a:hover{color:#C8A96E}
+footer h5{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#C8A96E;margin-bottom:14px}
+.fbar{border-top:1px solid rgba(245,240,232,.05);margin-top:36px;padding-top:18px;font-size:12px;color:#8B9BB4;display:flex;justify-content:space-between}
+
+@media(max-width:900px){.comp-cards{grid-template-columns:1fr}.three-pillars{grid-template-columns:1fr}.fgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.fgrid{grid-template-columns:1fr}.comp-hero h1{font-size:36px}.hero-actions{flex-direction:column}}
+</style>
 </head>
-<body data-page="home">
-<header>
-  <div class="wrap nav">
-    <a class="brand" href="index.html"><span class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C79A3F" stroke-width="2"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5a6 3 0 0012 0v-5"/></svg></span>Alumnus</a>
+<body>
+
+<!-- NAV -->
+<header style="position:sticky;top:0;z-index:50;background:rgba(10,14,26,.9);backdrop-filter:blur(12px);border-bottom:1px solid rgba(200,169,110,.1)">
+  <div class="wrap nav" style="height:68px">
+    <a class="brand" href="index.html" style="color:#F5F0E8">
+      <span class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C8A96E" stroke-width="2"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5a6 3 0 0012 0v-5"/></svg></span>
+      <span style="font-family:'Fraunces',serif">Alumnus</span>
+    </a>
     <nav class="navlinks" id="navlinks">
-      <a data-v="home" href="index.html">Home</a>
-      <a data-v="honors" href="honors.html">Honors</a>
-      <a data-v="connect" href="connect.html">Connect</a>
-      <a data-v="upskill" href="upskill.html">Upskill</a>
-      <a data-v="social" href="social.html">Social</a>
-      <a data-v="peers" href="peers.html">Peers</a>
+      <a data-v="home" href="index.html" style="color:#F5F0E8" class="active">Home</a>
+      <a data-v="competitions" href="competitions.html" style="color:#8B9BB4">Competitions</a>
+      <a data-v="honors" href="honors.html" style="color:#8B9BB4">Honors</a>
+      <a data-v="connect" href="connect.html" style="color:#8B9BB4">Connect</a>
+      <a data-v="upskill" href="upskill.html" style="color:#8B9BB4">Upskill</a>
+      <a data-v="social" href="social.html" style="color:#8B9BB4">Social</a>
+      <a data-v="peers" href="peers.html" style="color:#8B9BB4">Peers</a>
     </nav>
     <span class="spacer"></span>
-    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7689" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="search" placeholder="Search peers, mentors, classes…"/></div>
-    <button class="btn">Sign in</button>
-    <button class="burger" id="burger"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#11213F" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    <div class="search" style="background:rgba(28,34,53,.8);border-color:rgba(200,169,110,.2)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B9BB4" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      <input id="search" placeholder="Search competitions, mentors…" style="background:transparent;color:#F5F0E8"/>
+    </div>
+    <button class="btn" style="background:#C8A96E;color:#0A0E1A;border-radius:0;font-family:'Plus Jakarta Sans',sans-serif">Sign in</button>
+    <button class="burger" id="burger" style="background:none;border:none;cursor:pointer">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
   </div>
 </header>
 
-<main class="wrap">
-  <div class="hero">
-    <span class="pill" style="background:var(--gold);color:#fff">2026 Season Open</span>
-    <h1>Where alumni connect, learn and rise — together.</h1>
-    <p>Mentorship, masterclasses, placements and national honors, all in one network. Unlock up to 100% scholarship by competing in the 2026 challenges.</p>
-    <div class="cta"><a class="btn" href="upskill.html">Join Competitions →</a><a class="btn ghost" style="color:#fff;border-color:rgba(255,255,255,.3)" href="connect.html">Find a Mentor</a></div>
-    <div class="stats"><div class="stat"><b>48k+</b><span>Alumni worldwide</span></div><div class="stat"><b>120</b><span>Partner companies</span></div><div class="stat"><b>₹4.2cr</b><span>Scholarships awarded</span></div></div>
-  </div>
-
-  <div class="pillars">
-    <a class="card tap pillar" href="honors.html"><div class="ic">🏆</div><h3>Honors</h3><p class="muted">National recognition across all streams.</p></a>
-    <a class="card tap pillar" href="connect.html"><div class="ic">🤝</div><h3>Connect</h3><p class="muted">Mentors, placements & internships.</p></a>
-    <a class="card tap pillar" href="upskill.html"><div class="ic">🎓</div><h3>Upskill</h3><p class="muted">Masterclasses by experts & industry.</p></a>
-    <a class="card tap pillar" href="social.html"><div class="ic">💬</div><h3>Social</h3><p class="muted">Your circle of peers.</p></a>
-  </div>
-
-  <a class="card tap" href="peers.html" style="display:flex;align-items:center;gap:18px;padding:22px;margin-top:38px">
-    <div style="width:52px;height:52px;border-radius:14px;background:var(--ink);display:grid;place-items:center;flex-shrink:0">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C79A3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11a4 4 0 10-8 0M2 21a6 6 0 0112 0M16 11a4 4 0 014 4M22 21a6 6 0 00-3-5"/></svg>
+<main>
+  <!-- COMPETITIONS HERO (top 50%) -->
+  <section class="comp-hero">
+    <div class="wrap">
+      <div class="eyebrow">Featured Opportunity</div>
+      <h1>Compete for <em>full funding</em> —<br>your education, fully backed.</h1>
+      <p class="hero-sub">Alumnus Honors hosts national-level competitions judged by an international jury. Winners receive scholarships from 25% to 100% tuition coverage, plus internship placements and global recognition.</p>
+      <div class="scholarship-tags">
+        <span class="stag">25% Scholarship</span>
+        <span class="stag">50% Scholarship</span>
+        <span class="stag">100% Scholarship</span>
+        <span class="stag">Internship + Funding</span>
+      </div>
+      <div class="hero-actions">
+        <a href="competitions.html" class="btn-prim">View All Competitions →</a>
+        <button class="btn-sec">How It Works</button>
+      </div>
     </div>
-    <div style="flex:1">
-      <h3 style="font-size:18px">Peer Connect</h3>
-      <p class="muted" style="font-size:13px">Find and connect with alumni across every field.</p>
+
+    <!-- Featured competition cards -->
+    <div class="wrap" style="margin-top:0">
+      <div class="comp-cards" id="home-comps">
+        <!-- loaded by app.js -->
+        <div class="comp-card" style="opacity:.4">
+          <div class="days">Loading…</div>
+        </div>
+      </div>
+      <div class="view-all-bar">
+        <span id="comp-count">Loading competitions…</span>
+        <a href="competitions.html">Browse all competitions →</a>
+      </div>
     </div>
-    <span class="link" style="white-space:nowrap">Explore →</span>
-  </a>
+  </section>
 
-  <div class="sechead"><h2>Industry Insights · Mentor Zone</h2><a class="link" href="connect.html">All mentors</a></div>
-  <div class="grid g3" id="home-mentors"></div>
+  <div class="divider"></div>
 
-  <div class="sechead"><h2>Masterclasses</h2><a class="link" href="upskill.html">See all</a></div>
-  <div class="grid g4" id="home-classes"></div>
+  <!-- THREE PILLARS (bottom 50%) -->
+  <section class="pillars-strip">
+    <div class="wrap">
+      <div class="eyebrow sec-eyebrow">The Platform</div>
+      <div class="three-pillars" style="margin-top:0">
 
-  <div class="sechead"><h2>Competitions</h2></div>
-  <div class="grid g2" id="comps"></div>
+        <div class="pillar-block" onclick="location.href='honors.html'">
+          <div class="num">01</div>
+          <h3>Honors</h3>
+          <p>Annual national recognition across every stream, judged by an international panel of experts and industry leaders.</p>
+          <ul>
+            <li>International jury evaluation</li>
+            <li>Cross-stream recognition</li>
+            <li>Awards & scholarships</li>
+          </ul>
+          <a class="pill-link" href="honors.html">Explore Honors</a>
+        </div>
+
+        <div class="pillar-block" onclick="location.href='connect.html'">
+          <div class="num">02</div>
+          <h3>Connect</h3>
+          <p>Access mentors from leading global firms, placement drives with 120+ partner companies, and international study pathways.</p>
+          <ul>
+            <li>Mentor connect</li>
+            <li>Placement drive</li>
+            <li>Internship central</li>
+            <li>Education abroad</li>
+          </ul>
+          <a class="pill-link" href="connect.html">Explore Connect</a>
+        </div>
+
+        <div class="pillar-block" onclick="location.href='upskill.html'">
+          <div class="num">03</div>
+          <h3>Upskill</h3>
+          <p>Masterclasses delivered by faculty, subject-matter experts and industry practitioners — live, hybrid and on-demand.</p>
+          <ul>
+            <li>Faculty masterclasses</li>
+            <li>Industry sessions</li>
+            <li>Expert workshops</li>
+          </ul>
+          <a class="pill-link" href="upskill.html">Explore Upskill</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer>
-  <div class="wrap"><div class="fgrid">
-    <div><h4>Alumnus</h4><p style="max-width:280px">Where alumni connect, learn and rise — together. Built for graduates, recruiters and faculty.</p></div>
-    <div><h4>Explore</h4><a href="honors.html">Honors</a><a href="connect.html">Connect</a><a href="upskill.html">Upskill</a><a href="social.html">Social</a></div>
-    <div><h4>Network</h4><a href="peers.html">Peer Connect</a><a href="connect.html">Mentors</a><a href="connect.html">Internships</a><a href="upskill.html">Competitions</a><a href="connect.html">Study Abroad</a></div>
-    <div><h4>Company</h4><a>About</a><a>Careers</a><a>Contact</a><a>Privacy</a></div>
-  </div><div class="fbar">© 2026 Alumnus Network. Prototype.</div></div>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <div class="brand-name">Alumnus Honors</div>
+        <p style="max-width:260px">Where excellence meets opportunity. A national platform for recognition, connection and growth.</p>
+      </div>
+      <div><h5>Platform</h5><a href="competitions.html">Competitions</a><a href="honors.html">Honors</a><a href="connect.html">Connect</a><a href="upskill.html">Upskill</a></div>
+      <div><h5>Network</h5><a href="peers.html">Peer Connect</a><a href="connect.html">Mentors</a><a href="connect.html">Internships</a><a href="connect.html">Study Abroad</a></div>
+      <div><h5>Organisation</h5><a>About</a><a>Careers</a><a>Contact</a><a>Privacy</a></div>
+    </div>
+    <div class="fbar"><span>© 2026 Alumnus Honors. All rights reserved.</span><span>alumnushonors.com</span></div>
+  </div>
 </footer>
+
 <script src="config.js"></script>
 <script src="app.js"></script>
+<script>
+// Load featured competitions into home page cards
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const comps = await fetch((window.ALUMNUS_API||'https://alumnus-api.onrender.com') + '/api/competitions').then(r=>r.json());
+    const featured = comps.slice(0,3);
+    document.getElementById('comp-count').textContent = comps.length + ' competitions open for registration';
+    document.getElementById('home-comps').innerHTML = featured.map(c => `
+      <div class="comp-card" onclick="location.href='competition.html?id=${c.id}'">
+        <div class="days">⏱ <span>${c.days_left} days</span> remaining · ${c.deadline||'Open'}</div>
+        <h3>${c.title}</h3>
+        <div class="prize">${c.prize}</div>
+        <div class="tags">
+          ${c.scholarship_pct?`<span class="tag">${c.scholarship_pct} Scholarship</span>`:''}
+          ${c.stream?`<span class="tag">${c.stream}</span>`:''}
+          ${c.scope?`<span class="tag">${c.scope}</span>`:''}
+        </div>
+        <div class="arrow">→</div>
+      </div>`).join('') + (featured.length < 3 ? Array(3-featured.length).fill('<div class="comp-card" style="opacity:.15;pointer-events:none"><div class="days">Coming soon</div><h3 style="color:#3a4060">More competitions<br>being added</h3></div>').join('') : '');
+  } catch(e) {
+    document.getElementById('home-comps').innerHTML = '<div class="comp-card" style="grid-column:1/-1;opacity:.4;padding:40px;text-align:center">Competitions loading — check back shortly.</div>';
+  }
+});
+</script>
 </body>
 </html>

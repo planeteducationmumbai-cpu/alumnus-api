@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Competition — Alumnus Honors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,300;9..144,0,500;9..144,0,600;9..144,1,300;9..144,1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0A0E1A;--bg2:#0D1120;--card:#141928;--card2:#1C2235;--gold:#C8A96E;--text:#F5F0E8;--muted:#8B9BB4;--line:rgba(200,169,110,.12)}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+a{text-decoration:none;color:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:0 28px}
+
+/* nav */
+header{position:sticky;top:0;z-index:50;background:rgba(10,14,26,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:16px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-size:20px;font-weight:600}
+.logo{width:36px;height:36px;background:var(--gold);display:grid;place-items:center;flex-shrink:0}
+.back-link{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-left:auto}
+.back-link:hover{color:var(--gold)}
+.signin-btn{background:var(--gold);color:var(--bg);font-family:inherit;font-weight:700;font-size:13px;padding:10px 20px;border:none;cursor:pointer}
+
+/* hero band */
+.detail-hero{padding:72px 0 0;border-bottom:1px solid var(--line)}
+.breadcrumb{font-size:12px;color:var(--muted);margin-bottom:24px;display:flex;align-items:center;gap:8px}
+.breadcrumb a{color:var(--muted)}.breadcrumb a:hover{color:var(--gold)}
+.breadcrumb span{color:var(--muted)}
+.hero-grid{display:grid;grid-template-columns:1fr 340px;gap:60px;align-items:start}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.eyebrow:before{content:"";width:24px;height:1px;background:var(--gold)}
+.detail-hero h1{font-family:'Fraunces',serif;font-size:clamp(32px,4vw,54px);font-weight:300;line-height:1.06;letter-spacing:-.3px;max-width:600px}
+.detail-hero h1 em{font-style:italic;color:var(--gold)}
+.overview-text{font-size:16px;color:var(--muted);line-height:1.7;margin-top:22px;max-width:580px}
+
+/* apply card */
+.apply-card{background:var(--card);border:1px solid var(--line);padding:32px;position:sticky;top:88px}
+.apply-card .prize-big{font-family:'Fraunces',serif;font-size:36px;font-weight:300;color:var(--gold);line-height:1;margin-bottom:6px}
+.apply-card .prize-label{font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:24px}
+.apply-card .meta-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:13px}
+.apply-card .meta-row .label{color:var(--muted)}
+.apply-card .meta-row .val{color:var(--text);font-weight:600;text-align:right;max-width:180px}
+.apply-btn{display:block;background:var(--gold);color:var(--bg);font-family:inherit;font-weight:700;font-size:15px;padding:17px;text-align:center;cursor:pointer;border:none;width:100%;margin-top:24px;letter-spacing:.3px;transition:filter .15s}
+.apply-btn:hover{filter:brightness(1.08)}
+.apply-btn:disabled{opacity:.4;cursor:not-allowed}
+.share-row{display:flex;gap:10px;margin-top:14px}
+.share-btn{flex:1;background:transparent;border:1px solid rgba(139,155,180,.2);color:var(--muted);font-family:inherit;font-size:12px;font-weight:600;padding:10px;cursor:pointer;transition:border-color .15s;letter-spacing:.3px}
+.share-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* content sections */
+.detail-body{padding:64px 0 80px}
+.detail-grid{display:grid;grid-template-columns:1fr 340px;gap:60px;align-items:start}
+.sections{display:flex;flex-direction:column;gap:0}
+.section{padding:36px 0;border-bottom:1px solid var(--line)}
+.section:last-child{border-bottom:none}
+.section-num{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gold);margin-bottom:10px;text-transform:uppercase}
+.section h2{font-family:'Fraunces',serif;font-size:26px;font-weight:500;margin-bottom:18px}
+.section p,.section li{font-size:15px;color:var(--muted);line-height:1.75}
+.section ul{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.section ul li{display:flex;gap:12px;align-items:flex-start}
+.section ul li:before{content:"—";color:var(--gold);flex-shrink:0;margin-top:1px}
+
+/* sidebar extras */
+.sidebar-card{background:var(--card);border:1px solid var(--line);padding:24px;margin-bottom:16px}
+.sidebar-card h4{font-family:'Fraunces',serif;font-size:16px;font-weight:500;margin-bottom:14px;color:var(--text)}
+.sidebar-card p,.sidebar-card a{font-size:13px;color:var(--muted);line-height:1.6;display:block}
+.sidebar-card a{color:var(--gold);margin-top:6px}
+.sidebar-card a:hover{text-decoration:underline}
+
+/* tab nav */
+.tab-nav{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:32px;margin-top:-8px}
+.tab-nav button{background:none;border:none;color:var(--muted);font-family:inherit;font-size:13px;font-weight:600;padding:14px 20px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;letter-spacing:.3px}
+.tab-nav button.on{color:var(--text);border-bottom-color:var(--gold)}
+.tab-content{display:none}.tab-content.on{display:block}
+
+/* loading / error */
+#loading{padding:120px 0;text-align:center;color:var(--muted);font-size:15px}
+
+@media(max-width:900px){.hero-grid,.detail-grid{grid-template-columns:1fr}.apply-card{position:static;margin-top:32px}}
+@media(max-width:600px){.detail-hero{padding-top:48px}.detail-hero h1{font-size:30px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html">
+      <span class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A0E1A" stroke-width="2.5"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5a6 3 0 0012 0v-5"/></svg></span>
+      Alumnus
+    </a>
+    <a class="back-link" href="competitions.html">← All Competitions</a>
+    <button class="signin-btn" style="margin-left:16px">Sign in</button>
+  </div>
+</header>
+
+<div id="loading">Loading competition details…</div>
+<div id="page" style="display:none">
+  <section class="detail-hero">
+    <div class="wrap">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span>/</span>
+        <a href="competitions.html">Competitions</a>
+        <span>/</span>
+        <span id="bc-title">—</span>
+      </div>
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow" id="hero-eyebrow">Competition</div>
+          <h1 id="hero-title">—</h1>
+          <p class="overview-text" id="hero-overview"></p>
+          <div style="display:flex;gap:10px;margin-top:28px;flex-wrap:wrap" id="hero-tags"></div>
+        </div>
+        <div class="apply-card">
+          <div class="prize-big" id="card-prize">—</div>
+          <div class="prize-label">Prize / Scholarship</div>
+          <div class="meta-row"><span class="label">Deadline</span><span class="val" id="card-deadline">—</span></div>
+          <div class="meta-row"><span class="label">Days remaining</span><span class="val" id="card-days">—</span></div>
+          <div class="meta-row"><span class="label">Scholarship</span><span class="val" id="card-schol">—</span></div>
+          <div class="meta-row"><span class="label">Stream</span><span class="val" id="card-stream">—</span></div>
+          <div class="meta-row"><span class="label">Scope</span><span class="val" id="card-scope">—</span></div>
+          <div class="meta-row" id="card-ages-row"><span class="label">Age / Eligibility</span><span class="val" id="card-ages">—</span></div>
+          <button class="apply-btn" id="apply-btn" onclick="applyNow()">Register Now →</button>
+          <div class="share-row">
+            <button class="share-btn" onclick="copyLink()">Copy Link</button>
+            <button class="share-btn" onclick="shareWhatsApp()">WhatsApp</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="detail-body">
+    <div class="wrap">
+      <div class="detail-grid">
+        <div>
+          <div class="tab-nav">
+            <button class="on" onclick="showTab('overview',this)">Overview</button>
+            <button onclick="showTab('process',this)">Process</button>
+            <button onclick="showTab('criteria',this)">Criteria</button>
+            <button onclick="showTab('apply',this)">How to Apply</button>
+          </div>
+
+          <div class="tab-content on" id="tab-overview">
+            <div class="section">
+              <div class="section-num">01 — Overview</div>
+              <h2>About this Competition</h2>
+              <p id="sec-overview">—</p>
+            </div>
+          </div>
+
+          <div class="tab-content" id="tab-process">
+            <div class="section">
+              <div class="section-num">02 — Process</div>
+              <h2>How the Competition Works</h2>
+              <p id="sec-process">—</p>
+            </div>
+          </div>
+
+          <div class="tab-content" id="tab-criteria">
+            <div class="section">
+              <div class="section-num">03 — Criteria</div>
+              <h2>Eligibility Criteria</h2>
+              <p id="sec-criteria">—</p>
+            </div>
+          </div>
+
+          <div class="tab-content" id="tab-apply">
+            <div class="section">
+              <div class="section-num">04 — Application</div>
+              <h2>How to Apply</h2>
+              <p id="sec-apply">—</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sidebar-card">
+            <h4>Competition Details</h4>
+            <div style="display:flex;flex-direction:column;gap:0">
+              <div style="padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;display:flex;justify-content:space-between"><span style="color:var(--muted)">Type</span><span id="sd-type" style="font-weight:600">—</span></div>
+              <div style="padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;display:flex;justify-content:space-between"><span style="color:var(--muted)">Stream</span><span id="sd-stream" style="font-weight:600">—</span></div>
+              <div style="padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;display:flex;justify-content:space-between"><span style="color:var(--muted)">Scope</span><span id="sd-scope" style="font-weight:600">—</span></div>
+              <div style="padding:10px 0;font-size:13px;display:flex;justify-content:space-between"><span style="color:var(--muted)">Age Group</span><span id="sd-ages" style="font-weight:600">—</span></div>
+            </div>
+          </div>
+
+          <div class="sidebar-card" id="contact-card" style="display:none">
+            <h4>Contact</h4>
+            <p>Questions about this competition?</p>
+            <a id="contact-link" href="">—</a>
+          </div>
+
+          <div class="sidebar-card">
+            <h4>Share this Competition</h4>
+            <p>Know someone who should apply? Share it with them.</p>
+            <button onclick="copyLink()" style="margin-top:14px;background:transparent;border:1px solid rgba(139,155,180,.2);color:var(--gold);font-family:inherit;font-size:13px;font-weight:600;padding:10px 16px;cursor:pointer;width:100%;letter-spacing:.3px">Copy link to this competition</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer style="background:#060810;border-top:1px solid var(--line);padding:28px 0">
+  <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+    <p style="font-size:13px;color:#8B9BB4">© 2026 Alumnus Honors</p>
+    <a href="competitions.html" style="font-size:13px;color:#C8A96E">← Back to all competitions</a>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script>
+const API = (window.ALUMNUS_API || 'https://alumnus-api.onrender.com') + '/api';
+let COMP = null;
+
+function set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val || '—'; }
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.tab-nav button').forEach(b => b.classList.remove('on'));
+  document.getElementById('tab-' + name).classList.add('on');
+  btn.classList.add('on');
+}
+
+async function load() {
+  const id = new URLSearchParams(location.search).get('id');
+  if (!id) { document.getElementById('loading').textContent = 'No competition selected.'; return; }
+  try {
+    COMP = await fetch(API + '/competitions/' + id).then(r => r.json());
+    populate(COMP);
+  } catch {
+    document.getElementById('loading').textContent = 'Could not load this competition. Please try again.';
+  }
+}
+
+function populate(c) {
+  document.title = c.title + ' — Alumnus Honors';
+  set('bc-title', c.title);
+  set('hero-title', c.title);
+  set('hero-overview', c.overview || c.prize);
+  document.getElementById('hero-eyebrow').textContent = (c.stream || 'Competition') + ' · ' + (c.scope || 'National');
+
+  // tags
+  const tags = [c.scholarship_pct, c.stream, c.scope, c.ages, c.comp_type].filter(Boolean);
+  document.getElementById('hero-tags').innerHTML = tags.map(t =>
+    `<span style="font-size:11px;font-weight:700;padding:5px 12px;border:1px solid rgba(200,169,110,.25);color:#C8A96E;letter-spacing:.5px">${t}</span>`
+  ).join('');
+
+  // apply card
+  set('card-prize', c.prize);
+  set('card-deadline', c.deadline || 'See details');
+  set('card-days', c.days_left + ' day' + (c.days_left !== 1 ? 's' : '') + ' remaining');
+  set('card-schol', c.scholarship_pct || '—');
+  set('card-stream', c.stream || '—');
+  set('card-scope', c.scope || '—');
+  set('card-ages', c.ages || '—');
+
+  // sections
+  set('sec-overview', c.overview || 'Details coming soon.');
+  set('sec-process', c.process || 'Process details coming soon.');
+  set('sec-criteria', c.criteria || 'Eligibility details coming soon.');
+  set('sec-apply', c.how_to_apply || 'Application details coming soon.');
+
+  // sidebar
+  set('sd-type', c.comp_type || '—');
+  set('sd-stream', c.stream || '—');
+  set('sd-scope', c.scope || '—');
+  set('sd-ages', c.ages || '—');
+
+  // contact
+  if (c.contact_email) {
+    document.getElementById('contact-card').style.display = 'block';
+    const cl = document.getElementById('contact-link');
+    cl.href = 'mailto:' + c.contact_email;
+    cl.textContent = c.contact_email;
+  }
+
+  // apply button
+  const btn = document.getElementById('apply-btn');
+  if (c.external_link) { btn.onclick = () => window.open(c.external_link, '_blank'); }
+  else { btn.textContent = 'Register via Alumnus →'; }
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('page').style.display = 'block';
+}
+
+function applyNow() {
+  if (COMP?.external_link) window.open(COMP.external_link, '_blank');
+  else alert('Registration link coming soon. Contact us for details.');
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(location.href).then(() => {
+    const btn = event.target; btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy Link', 2000);
+  });
+}
+
+function shareWhatsApp() {
+  window.open('https://wa.me/?text=' + encodeURIComponent(document.title + ' — ' + location.href), '_blank');
+}
+
+load();
+</script>
+</body>
+</html>
